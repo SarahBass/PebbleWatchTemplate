@@ -28,19 +28,20 @@ const battery = new Battery({
         drawScreen();
     }
 });
-
+let lastDate = new Date();
 
 
 
 
 function draw(event) {
-    const now = event.date;
+    const now = event?.date ?? lastDate;
+    if (event?.date) lastDate = event.date;
 
     render.begin();
     render.fillRectangle(black, 0, 0, render.width, render.height);
     batteryPercent = battery.sample().percent;
 
-   
+
  
 
     // Format time as HH:MM
