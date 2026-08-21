@@ -14,59 +14,68 @@ const green = render.makeColor(0, 170, 0);
 const yellow = render.makeColor(255, 170, 0);
 const red = render.makeColor(255, 0, 0);
 
-// Day and month names for date formatting
+// Day and month names
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-
 // Battery
 let batteryPercent = 100;
-const battery = new Battery({
-    onSample() {
-        batteryPercent = this.sample().percent;
-        drawScreen();
-    }
-});
-let lastDate = new Date();
-
-
+const battery = new Battery({});
 
 
 function draw(event) {
-    const now = event?.date ?? lastDate;
-    if (event?.date) lastDate = event.date;
+    const now = event.date;
 
-    render.begin();
-    render.fillRectangle(black, 0, 0, render.width, render.height);
+    // Get current battery percentage
     batteryPercent = battery.sample().percent;
 
+    render.begin();
 
- 
+    // Background
+    render.fillRectangle(
+        black,
+        0,
+        0,
+        render.width,
+        render.height
+    );
 
-    // Format time as HH:MM
-    const hours = String(now.getHours()% 12 || 12);
+    // Battery bar
+    drawBatteryBar();
+
+    // Time
+    const hours = String(now.getHours() % 12 || 12);
     const minutes = String(now.getMinutes()).padStart(2, "0");
     const timeStr = `${hours}:${minutes}`;
 
-    // Center the time vertically (shifted up slightly to make room for date)
     let width = render.getTextWidth(timeStr, timeFont);
-    render.drawText(timeStr, timeFont, white,
-        (render.width - width) / 2,
-        (render.height / 2) - timeFont.height + 5);
 
-    // Format date as "Mon Jan 01"
+    render.drawText(
+        timeStr,
+        timeFont,
+        white,
+        (render.width - width) / 2,
+        (render.height / 2) - timeFont.height + 5
+    );
+
+    // Date
     const dayName = DAYS[now.getDay()];
     const monthName = MONTHS[now.getMonth()];
-    const dateStr = `${dayName} ${monthName} ${String(now.getDate()).padStart(2, "0")}`;
+    const dateStr =
+        `${dayName} ${monthName} ${String(now.getDate()).padStart(2, "0")}`;
 
-    // Draw date below the time
     width = render.getTextWidth(dateStr, dateFont);
-    render.drawText(dateStr, dateFont, white,
-        (render.width - width) / 2,
-        (render.height / 2) + 10);
 
-drawBatteryBar();
+    render.drawText(
+        dateStr,
+        dateFont,
+        white,
+        (render.width - width) / 2,
+        (render.height / 2) + 10
+    );
+
+
 
 const Year = now.getFullYear();
 const Month =now.getMonth() ;
@@ -76,72 +85,91 @@ const moon = getMoonPhase(Year, Month, Day);
 
 drawMoon(moon);
 
-   render.end();
 
-
-
-
-
-
-
-
-
-
-
+    render.end();
 }
 
+
 function drawBatteryBar() {
-    const barWidth = (render.width / 6) | 0;
-    const barX = ((render.width - barWidth) / 4) | 0;
-    const barY = render.height < 180 ? 6 : 20;
+    const barWidth = (render.width / 8) | 0;
+
+    // Center the battery bar
+    const barX = ((render.width - barWidth) / 2)-20 | 0;
+
+    const barY = (render.height / 2) -60;
     const barHeight = 8;
 
-    // Draw border
-    render.fillRectangle(white, barX, barY, barWidth, barHeight);
-    render.fillRectangle(black, barX + 1, barY + 1, barWidth - 2, barHeight - 2);
+    // Border
+    render.fillRectangle(
+        white,
+        barX,
+        barY,
+        barWidth,
+        barHeight
+    );
 
-    // Choose color based on battery level
+    // Interior/background
+    render.fillRectangle(
+        black,
+        barX + 1,
+        barY + 1,
+        barWidth - 2,
+        barHeight - 2
+    );
+
+    // Battery color
     let barColor;
+
     if (batteryPercent <= 20) {
         barColor = red;
-    } else if (batteryPercent <= 40) {
+    }
+    else if (batteryPercent <= 40) {
         barColor = yellow;
-    } else {
+    }
+    else {
         barColor = green;
     }
 
-    // Draw filled portion
-    const fillWidth = ((batteryPercent * (barWidth - 4)) / 100) | 0;
-    render.fillRectangle(barColor, barX + 2, barY + 2, fillWidth, barHeight - 4);
+    // Filled portion
+    const fillWidth =
+        ((batteryPercent * (barWidth - 4)) / 100) | 0;
+
+    render.fillRectangle(
+        barColor,
+        barX + 2,
+        barY + 2,
+        fillWidth,
+        barHeight - 4
+    );
 }
 
 function drawMoon(Moon) {
-   const CX = (render.width*3 / 4) | 0;
-    const CY = render.height < 180 ? 6 : 20;
+   const CX = (render.width*3 / 4)-30 | 0;
+    const CY = (render.height / 2) -57;
 const moon = Moon;
 
   if (moon==0){
-render.drawCircle(white, CX, CY, 8, 0, 360);
-render.drawCircle(black, CX, CY, 7, 0, 360);}
+render.drawCircle(white, CX, CY, 6, 0, 360);
+render.drawCircle(black, CX, CY, 5, 0, 360);}
   else if(moon==4){render.drawCircle(white, CX, CY, 8, 0, 360);}
   else if (moon==2){
-render.drawCircle(white, CX, CY, 8, 0, 360);
-render.drawCircle(black, CX, CY, 8, 180, 360);}
+render.drawCircle(white, CX, CY, 7, 0, 360);
+render.drawCircle(black, CX, CY, 6, 180, 360);}
   else if (moon==6){
-render.drawCircle(white, CX, CY, 8, 0, 360);
-render.drawCircle(black, CX, CY, 8, 0, 180);}
+render.drawCircle(white, CX, CY, 7, 0, 360);
+render.drawCircle(black, CX, CY, 6, 0, 180);}
   else if (moon==7){
-render.drawCircle(white, CX, CY, 8, 0, 360);
-render.drawCircle(black, CX+3, CY, 8, 0, 360);}
+render.drawCircle(white, CX, CY, 7, 0, 360);
+render.drawCircle(black, CX+3, CY, 6, 0, 360);}
   else if (moon==1){
-render.drawCircle(white, CX, CY, 8, 0, 360);
-render.drawCircle(black, CX-3, CY, 8, 0, 360);}
+render.drawCircle(white, CX, CY, 7, 0, 360);
+render.drawCircle(black, CX-3, CY, 6, 0, 360);}
   else if (moon==5){
-render.drawCircle(white, CX, CY, 8, 0, 360);
-render.drawCircle(black, CX+4, CY, 8, 0, 180);}
+render.drawCircle(white, CX, CY, 7, 0, 360);
+render.drawCircle(black, CX+4, CY, 6, 0, 180);}
   else if (moon==3){
-render.drawCircle(white, CX, CY, 8, 0, 360);
-render.drawCircle(black, CX-4, CY, 8, 180, 360);}
+render.drawCircle(white, CX, CY, 7, 0, 360);
+render.drawCircle(black, CX-4, CY, 6, 180, 360);}
 else{}
 
      /*
@@ -200,5 +228,7 @@ function getMoonPhase(year, month, day) {
      7 => Waning Crescent Moon
      */
 
-// Update every minute (fires immediately when registered)
+
+
+// Update every minute
 watch.addEventListener("minutechange", draw);
