@@ -23,6 +23,9 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
 let batteryPercent = 100;
 const battery = new Battery({});
 
+//Image
+
+
 
 function draw(event) {
     const now = event.date;
@@ -59,6 +62,10 @@ function draw(event) {
         (render.height / 2) - timeFont.height + 5
     );
 
+
+
+
+
     // Date
     const dayName = DAYS[now.getDay()];
     const monthName = MONTHS[now.getMonth()];
@@ -81,10 +88,11 @@ const Year = now.getFullYear();
 const Month =now.getMonth() ;
 const Day=now.getDate();
 const moon = getMoonPhase(Year, Month, Day);
-
+const seconds = now.getSeconds(); 
 
 drawMoon(moon);
-
+drawpet(seconds);
+drawpet2(seconds);
 
     render.end();
 }
@@ -228,7 +236,14 @@ function getMoonPhase(year, month, day) {
      7 => Waning Crescent Moon
      */
 
+function drawpet(seconds){
+render.drawCircle(white, (seconds%20)*10, (render.height*4)/5, 7);
+}
+
+function drawpet2(seconds){
+render.fillRectangle(white, render.width-((seconds%20)*15), (render.height*4)/5, 7, 7);
+}
 
 
 // Update every minute
-watch.addEventListener("minutechange", draw);
+watch.addEventListener("secondchange", draw);
