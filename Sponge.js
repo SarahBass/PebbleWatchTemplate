@@ -9,9 +9,10 @@ const black = render.makeColor(0, 0, 0);
 const gary = new Poco.PebbleBitmap(1);
 const pet = new Poco.PebbleBitmap(4);
 const pet1 = new Poco.PebbleBitmap(5);
+const ocean = new Poco.PebbleBitmap(2);
 
 let garyX = render.width;
-let garyY = (render.height - gary.height) / 2;
+let garyY = (render.height - gary.height)-10;
 let petX = 1;
 
 // Which pet frame to display
@@ -27,6 +28,12 @@ function draw() {
         0,
         render.width,
         render.height
+    );
+
+    render.drawBitmap(
+        ocean,
+        -40,
+        (render.height - ocean.height)
     );
 
     // Draw current pet animation frame
@@ -73,7 +80,7 @@ setInterval(() => {
     // Redraw everything
     draw();
 
-}, 33);
+}, 50);
 
 
 // Switch between pet and pet1
@@ -86,4 +93,4 @@ setInterval(() => {
         petFrame = pet;
     }
 
-}, 100);
+}, 70);
