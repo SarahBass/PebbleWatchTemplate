@@ -57,7 +57,7 @@ let animation2 = 5;
 
 // Background
 let bgNumber = 2;
-
+let adjust=0;
 
 // ============================================================
 // BITMAPS
@@ -157,9 +157,11 @@ function draw(event) {
     // OCEAN
     // ========================================================
 
+   if (render.width>200){adjust = 30;}
+
     render.drawBitmap(
         ocean,
-        -40,
+        -30+adjust,
         render.height - ocean.height
     );
 
