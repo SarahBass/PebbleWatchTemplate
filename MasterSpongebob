@@ -219,7 +219,7 @@ function draw(event) {
         timeFont,
         white,
         (render.width - width) / 2,
-        (render.height / 2) - timeFont.height + 5
+        timeFont.height
     );
 
 
@@ -250,7 +250,7 @@ function draw(event) {
         dateFont,
         white,
         (render.width - width) / 2,
-        (render.height / 2) + 10
+        timeFont.height + 40
     );
 
 
@@ -288,8 +288,7 @@ function drawBatteryBar() {
         (((render.width - barWidth) / 2) - 20) | 0;
 
 
-    const barY =
-        (render.height / 2) - 60;
+    const barY = 20;
 
 
     const barHeight = 8;
@@ -375,8 +374,7 @@ function drawMoon(Moon) {
         ((render.width * 3 / 4) - 30) | 0;
 
 
-    const CY =
-        (render.height / 2) - 57;
+    const CY = 25;
 
 
     const moon = Moon;
