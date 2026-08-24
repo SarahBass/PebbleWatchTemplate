@@ -4,7 +4,7 @@ console.log("Hello, Gary.");
 
 const render = new Poco(screen);
 
-const black = render.makeColor(0, 0, 0);
+const black = render.makeColor(0, 85, 170);
 
 const gary = new Poco.PebbleBitmap(1);
 const pet = new Poco.PebbleBitmap(4);
