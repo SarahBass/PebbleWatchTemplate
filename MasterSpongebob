@@ -79,7 +79,8 @@ const petFrames = [
     new Poco.PebbleBitmap(7),
     new Poco.PebbleBitmap(8),
     new Poco.PebbleBitmap(9),
-    new Poco.PebbleBitmap(10)
+    new Poco.PebbleBitmap(10),
+    new Poco.PebbleBitmap(11)
 ];
 
 
