@@ -8,10 +8,14 @@ const black = render.makeColor(0, 0, 0);
 
 const gary = new Poco.PebbleBitmap(1);
 const pet = new Poco.PebbleBitmap(4);
+const pet1 = new Poco.PebbleBitmap(5);
 
 let garyX = render.width;
 let garyY = (render.height - gary.height) / 2;
 let petX = 1;
+
+// Which pet frame to display
+let petFrame = pet;
 
 function draw() {
 
@@ -25,8 +29,9 @@ function draw() {
         render.height
     );
 
-render.drawBitmap(
-        pet,
+    // Draw current pet animation frame
+    render.drawBitmap(
+        petFrame,
         petX,
         garyY
     );
@@ -40,34 +45,45 @@ render.drawBitmap(
     render.end();
 }
 
-
 // Initial draw
 draw();
 
 
-// Move Gary approximately 30 times per second
+// Move everything approximately 30 times per second
 setInterval(() => {
 
     // Move Gary to the left
     garyX -= 2;
 
-
     // If Gary goes completely off the left side,
     // put him back on the right.
     if (garyX < -gary.width) {
-
         garyX = render.width;
     }
-// Move Pet to the right
-petX += 2;
 
-// If Pet goes completely off the right side,
-// put him back on the left.
-if (petX > render.width) {
-    petX = -pet.width;
-}
+    // Move Pet to the right
+    petX += 2;
+
+    // If Pet goes completely off the right side,
+    // put him back on the left.
+    if (petX > render.width) {
+        petX = -pet.width;
+    }
 
     // Redraw everything
     draw();
 
 }, 33);
+
+
+// Switch between pet and pet1
+setInterval(() => {
+
+    if (petFrame === pet) {
+        petFrame = pet1;
+    }
+    else {
+        petFrame = pet;
+    }
+
+}, 100);
