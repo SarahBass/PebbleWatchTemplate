@@ -4,7 +4,7 @@ console.log("Hello, Gary.");
 
 const render = new Poco(screen);
 
-const black = render.makeColor(0, 85, 170);
+const cobaltblue = render.makeColor(0, 85, 170);
 
 const gary = new Poco.PebbleBitmap(1);
 const pet = new Poco.PebbleBitmap(4);
@@ -23,7 +23,7 @@ function draw() {
     render.begin();
 
     render.fillRectangle(
-        black,
+        cobaltblue,
         0,
         0,
         render.width,
