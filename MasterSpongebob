@@ -51,55 +51,40 @@ const battery = new Battery({});
 // ANIMATION GRAPHICS
 // ============================================================
 
-// Pet animation frames
-let animation1 = 4;
-let animation2 = 5;
+let adjust = 0;
 
-// Background
-let bgNumber = 2;
-let adjust=0;
 
 // ============================================================
 // BITMAPS
 // ============================================================
 
+// Gary
 const gary = new Poco.PebbleBitmap(1);
 
-let pet = new Poco.PebbleBitmap(animation1);
-let pet1 = new Poco.PebbleBitmap(animation2);
 
-let ocean = new Poco.PebbleBitmap(bgNumber);
-
-
-// Resource numbers:
+// Pet animation frames
 //
-// 1  = gary
-// 2  = waternight
-// 3  = jelly
-// 4  = pet1
-// 5  = pet0
-// 6  = pet2
-// 7  = pet3
-// 8  = pet4
-// 9  = pet5
-// 10 = pet6
-// 11 = pet7
-// 12 = pet8
-// 13 = pet9
-// 14 = pet10
-// 15 = pet11
-// 16 = pet12
-// 17 = pet13
-// 18 = pet14
-// 19 = pet15
-// 20 = pet16
-// 21 = pet17
-// 22 = pet18
-// 23 = pet19
-// 24 = waternight1
-// 25 = waternight2
-// 26 = waternight3
-// 27 = waternight4
+// 4 = pet frame 1
+// 5 = pet frame 2
+// 6 = pet frame 3
+// 7 = pet frame 4
+// 8 = pet frame 5
+// 9 = pet frame 6
+// 10 = pet frame 7
+
+const petFrames = [
+    new Poco.PebbleBitmap(4),
+    new Poco.PebbleBitmap(5),
+    new Poco.PebbleBitmap(6),
+    new Poco.PebbleBitmap(7),
+    new Poco.PebbleBitmap(8),
+    new Poco.PebbleBitmap(9),
+    new Poco.PebbleBitmap(10)
+];
+
+
+// Ocean
+const ocean = new Poco.PebbleBitmap(2);
 
 
 // ============================================================
@@ -118,7 +103,9 @@ let petX = 1;
 // PET ANIMATION
 // ============================================================
 
-let petFrame = pet;
+// Current two frames selected by the minute
+let petFrame = petFrames[0];
+let petFrame2 = petFrames[1];
 
 let animationCounter = 0;
 
@@ -129,12 +116,44 @@ let animationCounter = 0;
 
 function draw(event) {
 
-    // Get current time
+    // ========================================================
+    // GET CURRENT TIME
+    // ========================================================
+
     const now = event?.date ?? new Date();
 
 
-    // Get battery percentage
-    batteryPercent = battery.sample().percent;
+    // ========================================================
+    // SELECT PET FRAMES BASED ON MINUTE
+    // ========================================================
+
+    /*
+     * Each minute selects a new pair.
+     *
+     * minute 0 -> frames 0 + 1
+     * minute 1 -> frames 2 + 3
+     * minute 2 -> frames 4 + 5
+     * minute 3 -> frames 6 + 7
+     *
+     * The % makes it loop through all 7 frames.
+     */
+
+const minute = now.getMinutes();
+
+const pair = minute % 4;
+
+const petIndex = pair * 2;
+
+petFrame = petFrames[petIndex];
+petFrame2 = petFrames[petIndex + 1];
+
+
+    // ========================================================
+    // GET BATTERY PERCENTAGE
+    // ========================================================
+
+    batteryPercent =
+        battery.sample().percent;
 
 
     render.begin();
@@ -157,11 +176,13 @@ function draw(event) {
     // OCEAN
     // ========================================================
 
-   if (render.width>200){adjust = 30;}
+    if (render.width > 200) {
+        adjust = 30;
+    }
 
     render.drawBitmap(
         ocean,
-        -30+adjust,
+        -30 + adjust,
         render.height - ocean.height
     );
 
@@ -170,8 +191,17 @@ function draw(event) {
     // PET
     // ========================================================
 
+    // Alternate between the two selected pet frames.
+    // animationCounter changes every 50ms.
+    // 0/1 gives approximately 100ms per frame.
+
+    const currentPet =
+        animationCounter % 2 === 0
+            ? petFrame
+            : petFrame2;
+
     render.drawBitmap(
-        petFrame,
+        currentPet,
         petX,
         garyY
     );
@@ -292,7 +322,6 @@ function drawBatteryBar() {
 
     const barY = 20;
 
-
     const barHeight = 8;
 
 
@@ -375,9 +404,7 @@ function drawMoon(Moon) {
     const CX =
         ((render.width * 3 / 4) - 30) | 0;
 
-
     const CY = 25;
-
 
     const moon = Moon;
 
@@ -647,8 +674,9 @@ function getMoonPhase(year, month, day) {
 // ANIMATION LOOP
 // ============================================================
 //
-// This is the ONLY timer that moves/draws the animation.
 // 50ms = approximately 20 frames per second.
+// The pet switches between its two selected frames
+// every 100ms.
 //
 
 setInterval(() => {
@@ -677,7 +705,7 @@ setInterval(() => {
 
     if (petX > render.width) {
 
-        petX = -pet.width;
+        petX = -petFrame.width;
 
     }
 
@@ -687,28 +715,6 @@ setInterval(() => {
     // --------------------------------------------------------
 
     animationCounter++;
-
-
-    // Change pet frame every 100ms
-    // because the main loop runs every 50ms.
-
-    if (animationCounter >= 2) {
-
-        animationCounter = 0;
-
-
-        if (petFrame === pet) {
-
-            petFrame = pet1;
-
-        }
-
-        else {
-
-            petFrame = pet;
-
-        }
-    }
 
 
     // --------------------------------------------------------
