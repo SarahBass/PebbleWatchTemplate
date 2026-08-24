@@ -1,3 +1,7 @@
+// ============================================================
+// EMERY WATCHFACE
+// ============================================================
+
 import Poco from "commodetto/Poco";
 import Battery from "embedded:sensor/Battery";
 
@@ -21,7 +25,7 @@ const white = render.makeColor(255, 255, 255);
 const green = render.makeColor(0, 170, 0);
 const yellow = render.makeColor(255, 170, 0);
 const red = render.makeColor(255, 0, 0);
-const cobaltblue = render.makeColor(0, 85, 170);
+const cobaltblue = render.makeColor(0, 0, 170);
 
 
 // ============================================================
@@ -58,14 +62,11 @@ let adjust = 0;
 // BITMAPS
 // ============================================================
 
-// Gary
-const gary = new Poco.PebbleBitmap(2);
-
 /*
 1  = waternight.png
-2  = fish0.png       ← Gary
-3  = fish1.png
-4  = fish2.png
+2  = fish0.png       ← Gary frame 1
+3  = fish1.png       ← Gary frame 2
+4  = fish2.png       ← Gary frame 3
 5  = dolphin1.png
 6  = dolphin2.png
 7  = pet1.png
@@ -76,6 +77,24 @@ const gary = new Poco.PebbleBitmap(2);
 12 = pet6.png
 13 = whale.png
 */
+
+
+// ============================================================
+// GARY FRAMES
+// ============================================================
+
+const garyFrames = [
+    new Poco.PebbleBitmap(2),
+    new Poco.PebbleBitmap(3),
+    new Poco.PebbleBitmap(4)
+];
+
+let gary = garyFrames[0];
+
+
+// ============================================================
+// PET FRAMES
+// ============================================================
 
 const petFrames = [
     new Poco.PebbleBitmap(5),
@@ -89,7 +108,10 @@ const petFrames = [
 ];
 
 
-// Ocean
+// ============================================================
+// OCEAN
+// ============================================================
+
 const ocean = new Poco.PebbleBitmap(1);
 
 
@@ -110,6 +132,7 @@ let petX = 1;
 // ============================================================
 
 // Current two frames selected by the minute
+
 let petFrame = petFrames[0];
 let petFrame2 = petFrames[1];
 
@@ -130,28 +153,54 @@ function draw(event) {
 
 
     // ========================================================
-    // SELECT PET FRAMES BASED ON MINUTE
+    // GET CURRENT MINUTE
+    // ========================================================
+
+    const minute = now.getMinutes();
+
+
+    // ========================================================
+    // SELECT GARY FRAME
     // ========================================================
 
     /*
-     * Each minute selects a new pair.
+     * Gary has 3 fish frames.
      *
-     * minute 0 -> frames 0 + 1
-     * minute 1 -> frames 2 + 3
-     * minute 2 -> frames 4 + 5
-     * minute 3 -> frames 6 + 7
+     * minute 0 → fish0.png
+     * minute 1 → fish1.png
+     * minute 2 → fish2.png
+     * minute 3 → fish0.png
      *
-     * The % makes it loop through all 7 frames.
+     * The % 3 loops through all 3 frames.
      */
 
-const minute = now.getMinutes();
+    const garyIndex = minute % 3;
 
-const pair = minute % 4;
+    gary = garyFrames[garyIndex];
 
-const petIndex = pair * 2;
 
-petFrame = petFrames[petIndex];
-petFrame2 = petFrames[petIndex + 1];
+    // ========================================================
+    // SELECT PET FRAMES
+    // ========================================================
+
+    /*
+     * Pet has 8 frames.
+     *
+     * minute 0 → frames 0 + 1
+     * minute 1 → frames 2 + 3
+     * minute 2 → frames 4 + 5
+     * minute 3 → frames 6 + 7
+     * minute 4 → back to frames 0 + 1
+     *
+     * The % 4 loops through all 4 pairs.
+     */
+
+    const pair = minute % 4;
+
+    const petIndex = pair * 2;
+
+    petFrame = petFrames[petIndex];
+    petFrame2 = petFrames[petIndex + 1];
 
 
     // ========================================================
@@ -197,9 +246,12 @@ petFrame2 = petFrames[petIndex + 1];
     // PET
     // ========================================================
 
-    // Alternate between the two selected pet frames.
-    // animationCounter changes every 50ms.
-    // 0/1 gives approximately 100ms per frame.
+    /*
+     * Alternate between the two selected pet frames.
+     *
+     * animationCounter changes every 50ms.
+     * 0/1 gives approximately 100ms per frame.
+     */
 
     const currentPet =
         animationCounter % 2 === 0
@@ -322,6 +374,7 @@ function drawBatteryBar() {
 
 
     // Center the battery bar
+
     const barX =
         (((render.width - barWidth) / 2) - 20) | 0;
 
@@ -688,26 +741,33 @@ function getMoonPhase(year, month, day) {
 setInterval(() => {
 
 
-   // --------------------------------------------------------
-// Move Gary RIGHT
-// --------------------------------------------------------
+    // --------------------------------------------------------
+    // Move Gary RIGHT
+    // --------------------------------------------------------
 
-garyX += 2;
-
-if (garyX > render.width) {
-    garyX = -gary.width;
-}
+    garyX += 2;
 
 
-// --------------------------------------------------------
-// Move Pet LEFT
-// --------------------------------------------------------
+    if (garyX > render.width) {
 
-petX -= 2;
+        garyX = -gary.width;
 
-if (petX < -petFrame.width) {
-    petX = render.width;
-}
+    }
+
+
+    // --------------------------------------------------------
+    // Move Pet LEFT
+    // --------------------------------------------------------
+
+    petX -= 2;
+
+
+    if (petX < -petFrame.width) {
+
+        petX = render.width;
+
+    }
+
 
     // --------------------------------------------------------
     // Pet animation
